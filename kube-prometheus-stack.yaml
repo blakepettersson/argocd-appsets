@@ -24,6 +24,11 @@ spec:
           targetRevision: 55.1.0
           helm:
             releaseName: kube-prometheus-stack
+            valueFiles:
+              - $values/values.yaml
+        - repoURL: https://github.com/blakepettersson/argocd-kube-prometheus-stack
+          targetRevision: main
+          ref: values
       destination:
         namespace: monitoring
         server: '{{.server}}'
