@@ -15,7 +15,7 @@ spec:
               - https://kubernetes.default.svc
   template:
     metadata:
-      name: '{{.name}}-argocd'
+      name: argocd
     spec:
       project: default
       source:
