@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - clusters: {}
+      selector:
+        matchExpressions:
+          - key: server
+            operator: In
+            values:
+              - https://kubernetes.default.svc
+  template:
+    metadata:
+      name: '{{.name}}-kube-prometheus-stack'
+    spec:
+      project: default
+      sources:
+        - chart: prometheus-community/kube-prometheus-stack
+          repoURL: https://prometheus-community.github.io/helm-charts
+          targetRevision: 55.1.0
+          helm:
+            releaseName: kube-prometheus-stack
+      destination:
+        namespace: monitoring
+        server: '{{.server}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
