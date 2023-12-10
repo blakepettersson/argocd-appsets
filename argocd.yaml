@@ -23,6 +23,7 @@ spec:
         path: .
         targetRevision: test
         helm:
+          releaseName: argocd
           valueFiles:
             - 'values.yaml'
       destination:
