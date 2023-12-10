@@ -6,13 +6,18 @@ metadata:
 spec:
   goTemplate: true
   generators:
-    - clusters: {}
-      selector:
-        matchExpressions:
-          - key: server
-            operator: In
-            values:
-              - https://kubernetes.default.svc
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: environment
+              operator: In
+              values:
+                - dev
+                - staging
+                - prod
+        values:
+          chartRevision: '{{ (dict "dev" "55.1.0" "staging" "55.1.0" "prod" "55.1.0")  (index .metadata.labels "environment"))}}'
+          valuesRevision: '{{ (dict "dev" "main" "staging" "main" "prod" "main")  (index .metadata.labels "environment"))}}'
   template:
     metadata:
       name: '{{.name}}-kube-prometheus-stack'
@@ -21,13 +26,13 @@ spec:
       sources:
         - chart: kube-prometheus-stack
           repoURL: https://prometheus-community.github.io/helm-charts
-          targetRevision: 55.1.0
+          targetRevision: '{{.values.chartRevision}}'
           helm:
             releaseName: kube-prometheus-stack
             valueFiles:
               - $values/values.yaml
         - repoURL: https://github.com/blakepettersson/argocd-kube-prometheus-stack
-          targetRevision: main
+          targetRevision: '{{.values.valuesRevision}}'
           ref: values
       destination:
         namespace: monitoring
