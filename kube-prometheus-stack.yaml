@@ -16,8 +16,8 @@ spec:
                 - staging
                 - prod
         values:
-          chartRevision: '{{ (dict "dev" "55.1.0" "staging" "55.1.0" "prod" "55.1.0")  (index .metadata.labels "environment"))}}'
-          valuesRevision: '{{ (dict "dev" "main" "staging" "main" "prod" "main")  (index .metadata.labels "environment"))}}'
+          chartRevision: '{{ (dict "dev" "55.1.0" "staging" "55.1.0" "prod" "55.1.0")  (index .metadata.labels "environment") }}'
+          valuesRevision: '{{ (dict "dev" "main" "staging" "main" "prod" "main")  (index .metadata.labels "environment") }}'
   template:
     metadata:
       name: '{{.name}}-kube-prometheus-stack'
