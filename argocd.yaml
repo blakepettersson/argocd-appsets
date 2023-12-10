@@ -15,7 +15,7 @@ spec:
               - https://kubernetes.default.svc
   template:
     metadata:
-      name: argocd
+      name: '{{.name}}-argocd'
     spec:
       project: default
       source:
@@ -23,6 +23,7 @@ spec:
         path: .
         targetRevision: main
         helm:
+          releaseName: argocd
           valueFiles:
             - 'values.yaml'
       destination:
