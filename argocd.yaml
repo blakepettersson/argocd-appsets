@@ -21,7 +21,7 @@ spec:
       source:
         repoURL: https://github.com/blakepettersson/argocd-deploy.git
         path: .
-        targetRevision: main
+        targetRevision: test
         helm:
           valueFiles:
             - 'values.yaml'
