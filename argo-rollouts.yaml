@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: rollouts
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - clusters:
+        selector:
+          # Two labels needs to be present on the cluster for this to work:
+          #
+          # `argo-rollouts-enabled`, which needs to be set to true
+          # `environment`, which needs to be set to either dev, staging or prod
+          matchExpressions:
+            - key: argo-rollouts-enabled
+              operator: In
+              values:
+                - "true"
+            - key: environment
+              operator: In
+              values:
+                - dev
+                - staging
+                - prod
+  template:
+    metadata:
+      # .name is a default attribute of the cluster generator, which corresponds to the actual cluster name.
+      name: '{{ .name }}-rollouts'
+    spec:
+      project: default
+      source:
+        chart: 'argo-rollouts'
+        repoURL: 'https://argoproj.github.io/argo-helm'
+        # For this to work the cluster label argo-rollouts-version needs to be set, and the value must correspond to a Helm version which exists.
+        targetRevision: '{{ index .metadata.labels "argo-rollouts-version" }}'
+        helm:
+          releaseName: argo-rollouts
+          # If any values needs to be added, add them here
+          valuesObject: {}
+      destination:
+        namespace: argo-rollouts
+        name: '{{ .name }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        retry:
+          limit: 5
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m0s
+        syncOptions:
+          - CreateNamespace=true
